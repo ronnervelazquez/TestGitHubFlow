@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: |
           cd test-github-flow
-          npm run build -- --prod
+          npm run build
 
       - name: Lint
         run: |

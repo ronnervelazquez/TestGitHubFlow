@@ -8,45 +8,40 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [17.x, 18.x]
-
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
 
       - name: Cache node modules
-        id: cache-nodemodules
         uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
         with:
-          # caching node_modules
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          path: test-github-flow/node_modules
+          key: ${{ runner.os }}-node-18.x-${{ hashFiles('test-github-flow/**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-node-18.x-
+            ${{ runner.os }}-node-
             ${{ runner.os }}-
 
-      - name: Change directory
-        run: cd test-github-flow
-        
       - name: Install Dependencies
-        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: |
+          cd test-github-flow
           npm ci
+
       - name: Build
         run: |
+          cd test-github-flow
           npm run build -- --prod
+
       - name: Lint
         run: |
+          cd test-github-flow
           npm run lint
+
       - name: Test
         run: |
-          npm run test -- --prod
+          cd test-github-flow
+          npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI

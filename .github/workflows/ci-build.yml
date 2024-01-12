@@ -19,7 +19,7 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         with:
-          path: test-github-flow/node_modules
+          path: node_modules
           key: ${{ runner.os }}-node-18.x-${{ hashFiles('test-github-flow/**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-18.x-
@@ -28,20 +28,16 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd test-github-flow
           npm ci
 
       - name: Build
         run: |
-          cd test-github-flow
           npm run build
 
       - name: Lint
         run: |
-          cd test-github-flow
           npm run lint
 
       - name: Test
         run: |
-          cd test-github-flow
           npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
